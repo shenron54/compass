@@ -1,12 +1,12 @@
 .env
 config/local/*
 !config/local/.gitkeep
-data/
+/data/
 *.db
 *.db-wal
 *.db-shm
-backups/
-shots/
+/backups/
+/shots/
 __pycache__/
 .venv/
 .pytest_cache/
