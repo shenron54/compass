@@ -87,9 +87,10 @@ The droplet stack is `deploy/docker-compose.yml`: `ib-gateway` (profile `ibkr`),
 `caddy`.
 
 ```bash
-rsync -az --exclude .venv --exclude data --exclude .git ./ root@HOST:/root/compass/
+rsync -az --exclude /.venv --exclude /data --exclude /.git --exclude /config/local --exclude /shots ./ root@HOST:/root/compass/   # anchored: a bare "data" would also skip compass/data/
 ssh root@HOST
 cd /root/compass && cp .env.example .env && cp ibkr.env.example ibkr.env && chmod 600 .env ibkr.env
+echo 'COMPASS_HOST="compass.sanmejora.com, HOST-IP-WITH-DASHES.sslip.io"' > deploy/.env
 # fill both files, then:
 docker compose -f deploy/docker-compose.yml --profile ibkr up -d --build
 docker compose -f deploy/docker-compose.yml exec -it web python -m compass.auth.setup --username aryaman

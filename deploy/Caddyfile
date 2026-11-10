@@ -1,4 +1,4 @@
-# COMPASS_HOST may list several names separated by commas (the sanmejora subdomain and an
+# COMPASS_HOST may list several names separated by ", " (comma and space) (the sanmejora subdomain and an
 # sslip.io name that works before DNS exists); Caddy gets a certificate for each.
 {$COMPASS_HOST} {
   encode gzip
