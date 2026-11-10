@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}compass{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/vendor/htmx.min.js" defer></script>
+  <script src="/static/vendor/echarts.min.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+{% if user %}
+<header class="top">
+  <a class="brand" href="/">compass</a>
+  <nav>
+    {% for key, label in [("dashboard", "Dashboard"), ("portfolio", "Portfolio"), ("macro", "Macro"), ("rules", "Rules"), ("coach", "Coach"), ("journal", "Journal"), ("status", "Status")] %}
+    <a href="{{ '/' if key == 'dashboard' else '/' ~ key }}" class="{{ 'on' if nav == key or (nav == 'rule_edit' and key == 'rules') }}">{{ label }}</a>
+    {% endfor %}
+  </nav>
+  <form method="post" action="/logout"><button class="link small">Sign out</button></form>
+</header>
+{% endif %}
+<main>
+{% block content %}{% endblock %}
+</main>
+<footer class="disclaimer">compass is a learning and decision-support tool, not financial advice. It reads your account and never places orders.</footer>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Status · compass{% endblock %}
+{% block content %}
+<h1>Status</h1>
+<div class="grid g3">
+  <div class="card kpi"><div class="l">Latest account snapshot</div><div class="v">{{ view.ts|ago if view else "none" }}</div>
+    <div class="small muted">{% if view %}{{ view.source }} · {{ view.holdings|length }} positions{% else %}gateway not reached yet{% endif %}</div></div>
+  <div class="card kpi"><div class="l">Portfolio config</div><div class="v">{{ cfg.source }}</div><div class="small muted">{{ settings.local_config }}</div></div>
+  <div class="card kpi"><div class="l">Gateway</div><div class="v small">{{ settings.ib_host }}:{{ settings.ib_port }}</div><div class="small muted">read-only API · client id {{ settings.ib_client_id }}</div></div>
+</div>
+<div class="card"><h2>Jobs</h2><div class="scroll"><table class="small">
+  <tr><th>Job</th><th>Last success</th><th>Detail</th><th>Last error</th></tr>
+  {% for j in jobs %}<tr><td>{{ j.job }}</td><td>{{ j.last_ok|ago }}</td><td>{{ j.detail or "" }}</td>
+    <td>{% if j.last_error %}<span class="{{ 'stale' if not j.last_ok or j.last_error_at > j.last_ok }}">{{ j.last_error_at|ago }}: {{ j.last_error }}</span>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="4" class="muted">No job has run yet.</td></tr>{% endfor %}
+</table></div></div>
+<div class="card"><h2>Data series</h2><div class="scroll"><table class="small">
+  <tr><th>Series</th><th>Source</th><th class="num">Points</th><th>From</th><th>To</th><th>Updated</th><th>Error</th></tr>
+  {% for m in meta %}<tr><td>{{ m.series_id }}</td><td>{% if m.source_url %}<a href="{{ m.source_url }}" rel="noopener noreferrer">{{ m.source }}</a>{% else %}{{ m.source }}{% endif %}</td>
+    <td class="num">{{ m.points[0] }}</td><td>{{ m.points[1] or "" }}</td><td>{{ m.points[2] or "" }}</td><td>{{ m.updated_at|ago }}</td><td class="stale">{{ m.last_error or "" }}</td></tr>
+  {% else %}<tr><td colspan="7" class="muted">No series yet.</td></tr>{% endfor %}
+</table></div></div>
+<form method="post" action="/logout"><input type="hidden" name="everywhere" value="1"><button data-confirm="Sign out every device?">Sign out everywhere</button></form>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Coach · compass{% endblock %}
+{% block content %}
+<h1>Coach</h1>
+{% if not available %}<div class="alert small">The AI coach is off: set <code>DEEPSEEK_API_KEY</code> in the droplet's <code>.env</code>. Lessons below work without it.</div>{% endif %}
+<div class="grid g2">
+  <div class="card">
+    <h2>Ask about the market or your portfolio</h2>
+    <form hx-post="/coach/ask" hx-target="#ask-answer" hx-indicator="#ask-wait" hx-disabled-elt="find button">
+      <textarea name="question" rows="3" maxlength="2000" placeholder="e.g. Why does an inverted yield curve matter for my tech-heavy holdings?" required></textarea>
+      <p class="row"><button class="primary">Ask</button><span id="ask-wait" class="htmx-indicator">thinking (up to a minute)…</span></p>
+    </form>
+    <div id="ask-answer"></div>
+  </div>
+  <div class="card">
+    <h2>Portfolio review</h2>
+    <p class="small muted">A cycle-aware review of your allocation, your rules and what to study next. Cached for the day.</p>
+    <p class="row"><button class="primary" hx-post="/coach/review" hx-target="#review-answer" hx-indicator="#review-wait" hx-disabled-elt="this">Review my portfolio</button><span id="review-wait" class="htmx-indicator">thinking…</span></p>
+    <div id="review-answer"></div>
+  </div>
+</div>
+<div class="grid g2">
+  <div class="card">
+    <h2>Lessons</h2>
+    <p class="small">This week: <a href="/coach/lessons/{{ lesson.slug }}"><b>{{ lesson.title }}</b></a></p>
+    <ol class="small">{% for l in lessons %}<li><a href="/coach/lessons/{{ l.slug }}">{{ l.title }}</a> <span class="muted">· {{ l.summary }}</span></li>{% endfor %}</ol>
+  </div>
+  <div class="card">
+    <h2>Spend this month</h2>
+    <div class="kpi"><div class="v">${{ '%.2f'|format(spent) }} <span class="small muted">of ${{ '%.2f'|format(cap) }} cap</span></div></div>
+    <div class="bar" style="margin: 8px 0"><span style="width: {{ [spent / cap * 100 if cap else 100, 100]|min }}%"></span></div>
+    {% if usage %}<table class="small">{% for u in usage %}<tr><td>{{ u.purpose }}</td><td class="num">{{ u.n }} calls</td><td class="num">${{ '%.3f'|format(u.cost) }}</td></tr>{% endfor %}</table>
+    {% else %}<p class="small muted">No calls yet this month.</p>{% endif %}
+    <p class="small muted">Estimated from token counts at <code>LLM_PRICE_*</code> rates (set high on purpose). The coach stops when the cap is reached.</p>
+  </div>
+</div>
+{% endblock %}

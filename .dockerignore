@@ -1,0 +1,13 @@
+.venv
+.git
+data
+shots
+config/local
+.env
+ibkr.env
+**/__pycache__
+.pytest_cache
+.ruff_cache
+*.egg-info
+tests
+tools

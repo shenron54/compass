@@ -1,0 +1,94 @@
+# Approximate index composition used to see through ETFs to the sectors and companies inside them.
+# Public index data, not personal data. Weights drift; refresh from each fund's factsheet and
+# bump as_of. The UI shows as_of next to every look-through figure.
+# Sectors are GICS. Alphabet sits in Communication Services, AMD and NVIDIA in Information Technology.
+
+etfs:
+  EQQQ:
+    name: Invesco EQQQ Nasdaq-100 UCITS ETF (Dist)
+    index: Nasdaq-100
+    as_of: "2026-06-30"
+    source: https://www.invesco.com/uk/en/financial-products/etfs/invesco-eqqq-nasdaq-100-ucits-etf-dist.html
+    sectors:
+      Information Technology: 0.52
+      Communication Services: 0.16
+      Consumer Discretionary: 0.13
+      Health Care: 0.05
+      Consumer Staples: 0.05
+      Industrials: 0.04
+      Other: 0.05
+    names:
+      NVDA: 0.095
+      MSFT: 0.085
+      AAPL: 0.080
+      AMZN: 0.055
+      AVGO: 0.050
+      GOOG: 0.075   # Alphabet class A + C combined
+      META: 0.035
+      AMD: 0.018
+  VUAA:
+    name: Vanguard S&P 500 UCITS ETF (Acc)
+    index: S&P 500
+    as_of: "2026-06-30"
+    source: https://www.vanguard.co.uk/professional/product/etf/equity/9679/sp-500-ucits-etf-usd-accumulating
+    sectors:
+      Information Technology: 0.34
+      Financials: 0.13
+      Communication Services: 0.10
+      Consumer Discretionary: 0.10
+      Health Care: 0.09
+      Industrials: 0.08
+      Consumer Staples: 0.05
+      Energy: 0.03
+      Utilities: 0.025
+      Real Estate: 0.02
+      Materials: 0.02
+      Other: 0.015
+    names:
+      NVDA: 0.075
+      MSFT: 0.065
+      AAPL: 0.062
+      AMZN: 0.040
+      GOOG: 0.045
+      META: 0.030
+      AVGO: 0.028
+      AMD: 0.007
+  SWRD:
+    name: SPDR MSCI World UCITS ETF (Acc)
+    index: MSCI World
+    as_of: "2026-06-30"
+    source: https://www.ssga.com/uk/en_gb/intermediary/etfs/spdr-msci-world-ucits-etf-swrd-ln
+    sectors:
+      Information Technology: 0.27
+      Financials: 0.17
+      Industrials: 0.11
+      Consumer Discretionary: 0.10
+      Health Care: 0.095
+      Communication Services: 0.085
+      Consumer Staples: 0.055
+      Energy: 0.035
+      Materials: 0.03
+      Utilities: 0.027
+      Real Estate: 0.02
+      Other: 0.003
+    names:
+      NVDA: 0.055
+      MSFT: 0.047
+      AAPL: 0.045
+      AMZN: 0.029
+      GOOG: 0.033
+      META: 0.022
+      AVGO: 0.020
+      AMD: 0.005
+
+stocks:
+  GOOG: {name: Alphabet, sector: Communication Services}
+  GOOGL: {name: Alphabet, sector: Communication Services, same_as: GOOG}
+  AMD: {name: Advanced Micro Devices, sector: Information Technology}
+  NVDA: {name: NVIDIA, sector: Information Technology}
+  MSFT: {name: Microsoft, sector: Information Technology}
+  AAPL: {name: Apple, sector: Information Technology}
+  AMZN: {name: Amazon, sector: Consumer Discretionary}
+  META: {name: Meta Platforms, sector: Communication Services}
+  AVGO: {name: Broadcom, sector: Information Technology}
+  TSLA: {name: Tesla, sector: Consumer Discretionary}

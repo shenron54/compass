@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ e.title }} · compass{% endblock %}
+{% block content %}
+<p class="small"><a href="/journal">← Journal</a></p>
+<h1>{{ e.title }}</h1>
+<p class="muted">{{ e.created_at[:16].replace("T", " ") }} UTC · {{ e.action }}{% if e.symbols %} · {{ e.symbols }}{% endif %}{% if e.rule_id %} · rule <a href="/rules/{{ e.rule_id }}/history">{{ e.rule_id }}</a>{% endif %}</p>
+<div class="grid g2">
+  <div class="card">
+    <h3>Thesis</h3><p>{{ e.thesis }}</p>
+    {% if e.trigger %}<h3>Trigger</h3><p>{{ e.trigger }}</p>{% endif %}
+    {% if e.expected %}<h3>Expected</h3><p>{{ e.expected }}</p>{% endif %}
+  </div>
+  <div class="card">
+    <h3>Prices then and now</h3>
+    {% if changes %}<ul class="small">{% for c in changes %}<li>{{ c }}</li>{% endfor %}</ul>{% else %}<p class="small muted">No prices were recorded with this entry.</p>{% endif %}
+  </div>
+</div>
+<div class="card">
+  <h2>Reviews</h2>
+  {% for r in e.reviews %}<h3>After {{ r.horizon_days }} days <span class="small muted">· {{ r.created_at[:10] }}</span></h3><div class="coach-answer">{{ r.text|md|safe }}</div>{% else %}<p class="small muted">Scheduled reviews run after 30, 90 and 365 days.</p>{% endfor %}
+  <p class="row"><button hx-post="/journal/{{ e.id }}/review" hx-target="#review-now" hx-indicator="#review-wait" hx-disabled-elt="this">Review now</button><span id="review-wait" class="htmx-indicator">thinking…</span></p>
+  <div id="review-now"></div>
+</div>
+{% endblock %}

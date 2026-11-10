@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chart %}
+{% block title %}Portfolio · compass{% endblock %}
+{% block content %}
+<h1>Portfolio</h1>
+{% if cfg.source == "example" %}
+<div class="alert small">Targets and bands come from the example config. Copy <code>compass/defaults/portfolio.example.yaml</code> to <code>config/local/portfolio.yaml</code> and set your own.</div>
+{% endif %}
+{% if not view %}
+<div class="card"><p class="muted">No snapshot yet. See the <a href="/status">status page</a>.</p></div>
+{% else %}
+<div class="card">
+  <div class="row" style="justify-content: space-between">
+    <h2>Holdings</h2>
+    <span class="small muted">{{ view.source }} · {{ view.ts|ago }} · values in {{ view.base_currency }} at IBKR's exchange rates</span>
+  </div>
+  <div class="scroll">
+  <table>
+    <tr><th>Symbol</th><th>Name</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Value ({{ view.base_currency }})</th>
+      <th class="num">Weight</th><th class="num">Target</th><th>Drift</th><th class="num">Unrealised</th></tr>
+    {% for h in view.holdings %}
+    <tr>
+      <td><b>{{ h.symbol }}</b></td>
+      <td class="small">{{ h.name }}<div class="muted">{{ h.kind }} · {{ h.sector }}</div></td>
+      <td class="num">{{ '%g'|format(h.quantity) }}</td>
+      <td class="num">{{ '%.2f'|format(h.market_price) if h.market_price is not none else '—' }} <span class="muted small">{{ h.currency }}</span></td>
+      <td class="num">{{ h.value_base|money }}</td>
+      <td class="num">{{ h.weight|pct }}</td>
+      <td class="num">{{ h.target|pct(0) if h.target is not none else '—' }}</td>
+      <td>
+        {% if h.target is not none %}
+        <div class="bar" title="weight {{ h.weight|pct }} vs target {{ h.target|pct(0) }} ± {{ h.band|pct(0) }}"><span style="width: {{ [h.weight * 100 * 2, 100]|min }}%"></span><i style="left: {{ [h.target * 100 * 2, 100]|min }}%"></i></div>
+        <span class="small status-{{ h.status }}">{{ h.drift|signed_pct }} {{ h.status }}</span>
+        {% else %}<span class="small muted">no target</span>{% endif %}
+      </td>
+      <td class="num">{{ h.unrealized_pnl_base|money }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td><b>Cash</b></td><td class="small muted">all currencies</td><td></td><td></td>
+      <td class="num">{{ view.cash|money }}</td><td class="num">{{ view.cash_weight|pct }}</td>
+      <td class="num">{{ view.cash_target|pct(0) if view.cash_target is not none else '—' }}</td>
+      <td><span class="small status-{{ view.cash_status }}">{{ view.cash_status }}</span></td><td></td>
+    </tr>
+    <tr><td colspan="4"><b>Total</b></td><td class="num"><b>{{ view.nav|money }}</b></td><td colspan="4"></td></tr>
+  </table>
+  </div>
+  <p class="small muted">Drift bars are scaled so 50% of NAV fills the bar; the line marks the target.</p>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <h2>Look-through sectors</h2>
+    <p class="small muted">Funds are split by their index's sector weights. "Tech" here = {{ view.tech_sectors|join(" + ") }}: <b>{{ view.tech_weight|pct }}</b>.</p>
+    <table>
+      {% for s, w in view.sectors %}
+      <tr><td>{{ s }}</td><td style="width: 45%"><div class="bar"><span style="width: {{ [w * 100, 100]|min }}%"></span></div></td><td class="num">{{ w|pct }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="card">
+    <h2>Look-through companies</h2>
+    <p class="small muted">Direct holdings plus each fund's share of the company.</p>
+    <table>
+      <tr><th>Company</th><th class="num">Direct</th><th class="num">Via funds</th><th class="num">Total</th></tr>
+      {% for e in view.names[:12] %}
+      <tr><td>{{ e.name }}</td><td class="num">{{ e.direct|pct }}</td><td class="num">{{ e.via_funds|pct }}</td><td class="num"><b>{{ e.total|pct }}</b></td></tr>
+      {% endfor %}
+    </table>
+    <p class="small muted">Fund weights are approximate, as of {% for k, d in view.lookthrough_as_of.items() %}{{ k }} {{ d }}{{ ", " if not loop.last }}{% endfor %}. Edit <code>compass/defaults/lookthrough.yaml</code> or override in <code>config/local/lookthrough.yaml</code>.</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="grid g2">
+  <div class="card"><h2>NAV and net deposits</h2>{{ chart("nav-chart", nav_chart) }}
+    <p class="small muted">Sources: {{ sources|sort|join(", ") or "none yet" }}. Flex statements (IBKR's official end-of-day figures) replace the app's own snapshots on the days they cover. Net deposits come from Flex cash transactions.</p></div>
+  <div class="card"><h2>Drawdown from the account's peak</h2>{{ chart("dd-chart", dd_chart) }}
+    <p class="small muted">Includes deposits, so a big deposit lifts the peak. The index drawdowns on the Macro page are cleaner for judging the market.</p></div>
+</div>
+{% endblock %}

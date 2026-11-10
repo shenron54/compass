@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} · compass{% endblock %}
+{% block content %}
+<p class="small"><a href="/coach">← Coach</a></p>
+<article class="card lesson">
+  <h1>{{ lesson.title }}</h1>
+  <p class="muted">{{ lesson.summary }}</p>
+  {{ lesson.html|safe }}
+  {% if related %}<p class="small">Live indicators for this lesson: {% for i in related %}<a href="/macro/{{ i.id }}">{{ i.name }}</a>{{ ", " if not loop.last }}{% endfor %}</p>{% endif %}
+</article>
+{% endblock %}

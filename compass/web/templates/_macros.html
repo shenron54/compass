@@ -1,0 +1,26 @@
+{% macro chart(id, spec, cls="chart") -%}
+<div class="{{ cls }}" data-chart="{{ id }}"></div>
+<script type="application/json" id="{{ id }}">{{ spec|safe }}</script>
+{%- endmacro %}
+
+{% macro tone(t, label) -%}<span class="tone {{ t }}">{{ label }}</span>{%- endmacro %}
+
+{% macro alerts_block(alerts) -%}
+{% for a in alerts %}
+<div class="alert">
+  <div class="row" style="justify-content: space-between">
+    <h3>Rule firing: {{ a.name }}</h3>
+    <form method="post" action="/alerts/{{ a.id }}/dismiss"><button class="link small">Dismiss</button></form>
+  </div>
+  <div class="small">{{ a.explanation }}</div>
+  {% if a.suggestions %}<ul class="small">{% for s in a.suggestions %}<li>{{ s }}</li>{% endfor %}</ul>{% endif %}
+  <div class="small muted">Since {{ a.ts|ago }} · <a href="/rules/{{ a.rule_id }}/history">history</a> · compass never trades; record what you do in the <a href="/journal">journal</a>.</div>
+</div>
+{% endfor %}
+{%- endmacro %}
+
+{% macro explain_button(url, target) -%}
+<button class="link small" hx-post="{{ url }}" hx-target="#{{ target }}" hx-swap="innerHTML" hx-indicator="#{{ target }}-wait" hx-disabled-elt="this">Explain this</button>
+<span id="{{ target }}-wait" class="htmx-indicator">thinking…</span>
+<div id="{{ target }}"></div>
+{%- endmacro %}

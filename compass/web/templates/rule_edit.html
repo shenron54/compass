@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit " ~ rule_id if rule_id else "New rule" }} · compass{% endblock %}
+{% block content %}
+<p class="small"><a href="/rules">← Rules</a></p>
+<h1>{{ "Edit rule " ~ rule_id if rule_id else "New rule" }}</h1>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<div class="grid g2">
+  <form class="card" method="post" action="/rules/save">
+    <input type="hidden" name="original_id" value="{{ rule_id or '' }}">
+    {% if examples %}
+    <label for="example">Start from an example</label>
+    <select id="example" data-example-target="rule-text">
+      <option value="">Choose…</option>
+      {% for t in examples %}<option value="{{ t }}">{{ t.replace("_", " ") }}</option>{% endfor %}
+    </select>
+    {% endif %}
+    <label for="rule-text">Rule (YAML)</label>
+    <textarea id="rule-text" class="code" name="text" spellcheck="false" required>{{ text }}</textarea>
+    <p><button class="primary" type="submit">Save</button></p>
+  </form>
+  <div class="card small">
+    <h2>Rule types</h2>
+    <p><b>allocation_band</b>: <code>measure</code> is <code>position_weight</code> or <code>group_weight</code> (with <code>symbols</code>), <code>lookthrough_tech</code> or <code>cash_weight</code>, plus <code>min</code> and/or <code>max</code> as fractions (0.65 = 65%).</p>
+    <p><b>valuation_freeze</b>: fires when <code>series</code> reaches <code>above</code> and stays on until it falls to <code>resume_below</code>. Series such as <code>CAPE_PCT</code>, <code>NDX_ABOVE_200</code> or <code>FRED:VIXCLS</code>.</p>
+    <p><b>drawdown_ladder</b>: <code>tranches</code> of <code>drawdown</code> (0.10 = -10% from the high), <code>fraction</code> of the budget and an optional <code>buy</code>. The budget is <code>budget</code> if set, otherwise cash above <code>cash_floor</code>. The cycle resets when the price is back within <code>reset_within</code> of its high.</p>
+    <p><b>trim_at_high</b>: fires when <code>symbol</code>'s price <code>series</code> is <code>above_200dma</code> (0.25 = 25%) over its 200-day average <i>and</i> the weight is at least <code>overweight_by</code> above <code>target</code> (defaults to the portfolio target).</p>
+    <p>Every rule needs <code>id</code> (lowercase, dashes), <code>name</code> and <code>type</code>. Add a <code>note</code> to remind yourself why it exists.</p>
+    <p>Series keys: <code>FRED:&lt;id&gt;</code>, <code>MULTPL:CAPE</code>, <code>MULTPL:SP500</code>, <code>IB:&lt;symbol&gt;</code>, or a derived series: CAPE_PCT, NDX_ABOVE_200, SPX_ABOVE_200, NDX_DD, SPX_DD, SPX_LONG_DD, NDX_RSI, CPI_YOY, M2_YOY, ICSA_4W.</p>
+  </div>
+</div>
+{% for t, text in examples.items() %}<textarea hidden id="example-{{ t }}">{{ text }}</textarea>{% endfor %}
+{% endblock %}

@@ -1,0 +1,42 @@
+# Starter rules. Copy to config/local/rules.yaml (gitignored) to seed your own set on first run;
+# after that, edit rules on the Rules page. Thresholds here are examples, not advice.
+rules:
+  - id: tech-cap
+    name: Cap look-through tech exposure
+    type: allocation_band
+    measure: lookthrough_tech
+    max: 0.65
+    note: Funds overlap with single stocks; this counts tech inside the ETFs too.
+
+  - id: cash-floor
+    name: Keep a cash reserve
+    type: allocation_band
+    measure: cash_weight
+    min: 0.05
+
+  - id: cape-freeze
+    name: Pause new equity buys when valuations are extreme
+    type: valuation_freeze
+    series: CAPE_PCT
+    above: 95
+    resume_below: 85
+    applies_to: new purchases of equity funds
+
+  - id: ndx-ladder
+    name: Deploy cash into Nasdaq-100 drawdowns
+    type: drawdown_ladder
+    series: FRED:NASDAQ100
+    cash_floor: 0
+    reset_within: 0.03
+    tranches:
+      - {drawdown: 0.10, fraction: 0.25, buy: EQQQ}
+      - {drawdown: 0.20, fraction: 0.35, buy: EQQQ}
+      - {drawdown: 0.30, fraction: 0.40, buy: EQQQ}
+
+  - id: single-stock-trim
+    name: Trim a single stock that runs far above trend
+    type: trim_at_high
+    symbol: NVDA
+    series: FRED:NASDAQ100
+    above_200dma: 0.25
+    overweight_by: 0.03

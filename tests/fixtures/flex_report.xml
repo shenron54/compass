@@ -1,0 +1,23 @@
+<FlexQueryResponse queryName="compass" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U0000000" fromDate="20260101" toDate="20261109">
+      <EquitySummaryInBase>
+        <EquitySummaryByReportDateInBase reportDate="20261106" cash="5000.00" stock="45000.00" total="50000.00"/>
+        <EquitySummaryByReportDateInBase reportDate="2026-11-09" cash="5000.00" stock="44500.00" total="49500.00"/>
+      </EquitySummaryInBase>
+      <CashTransactions>
+        <CashTransaction transactionID="9001" type="Deposits/Withdrawals" currency="HKD" amount="20000" fxRateToBase="1" dateTime="20260115;101500" description="CASH RECEIPTS"/>
+        <CashTransaction transactionID="9002" type="Dividends" currency="USD" amount="1.60" fxRateToBase="7.78" dateTime="2026-06-16" symbol="GOOG" description="GOOG CASH DIVIDEND"/>
+        <CashTransaction transactionID="9003" type="Withholding Tax" currency="USD" amount="-0.48" fxRateToBase="7.78" dateTime="06/16/2026" symbol="GOOG" description="GOOG US TAX"/>
+      </CashTransactions>
+      <Trades>
+        <Trade tradeID="7001" tradeDate="20260116" symbol="EQQQ" assetCategory="STK" currency="GBP" quantity="3" tradePrice="455.10" proceeds="-1365.30" ibCommission="-3" fxRateToBase="10.05" buySell="BUY" levelOfDetail="EXECUTION"/>
+        <Trade tradeID="7002" tradeDate="20260120" symbol="AMD" assetCategory="STK" currency="USD" quantity="2" tradePrice="160.00" proceeds="-320" ibCommission="-1" fxRateToBase="7.80" buySell="BUY" levelOfDetail="EXECUTION"/>
+        <Trade tradeDate="20260120" symbol="AMD" quantity="2" levelOfDetail="SYMBOL_SUMMARY"/>
+      </Trades>
+      <OpenPositions>
+        <OpenPosition symbol="EQQQ" currency="GBP" position="3" costBasisMoney="1368.30"/>
+      </OpenPositions>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>

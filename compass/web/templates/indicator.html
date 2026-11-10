@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chart, tone, explain_button %}
+{% block title %}{{ r.name }} · compass{% endblock %}
+{% block content %}
+<p class="small"><a href="/macro">← Macro</a></p>
+<h1>{{ r.name }} {{ tone(r.tone, r.label) }}</h1>
+<div class="grid g4">
+  <div class="card kpi"><div class="l">Latest</div><div class="v">{{ r|fmt_value }}</div><div class="small muted">{{ r.date or "no data" }}</div></div>
+  <div class="card kpi"><div class="l">Percentile</div><div class="v">{{ '%.0f'|format(r.percentile) if r.percentile is not none else '—' }}</div><div class="small muted">vs history since {{ r.history_start or "—" }}</div></div>
+  <div class="card kpi"><div class="l">Change ({{ r.change_label or "—" }})</div><div class="v">{{ '%+.2f'|format(r.change) if r.change is not none else '—' }}</div></div>
+  <div class="card kpi"><div class="l">Series</div><div class="v small">{{ r.series }}</div><div class="small muted">{{ description }}</div></div>
+</div>
+<div class="card"><h2>Full history</h2>{{ chart("hist", history, "chart tall") }}
+  {% if meta %}<p class="small muted">Source: {% if meta.source_url %}<a href="{{ meta.source_url }}" rel="noopener noreferrer">{{ meta.source }}</a>{% else %}{{ meta.source }}{% endif %} · updated {{ meta.updated_at|ago }}{% if meta.last_error %} · <span class="stale">last error: {{ meta.last_error }}</span>{% endif %}</p>{% endif %}
+</div>
+<div class="card"><h2>Reading</h2><p>{{ r.text }}</p>{{ explain_button("/coach/explain/indicator/" ~ r.id, "explain-one") }}</div>
+{% if lesson %}<div class="card"><h2>Lesson</h2><a href="/coach/lessons/{{ lesson.slug }}">{{ lesson.title }}</a><p class="small muted">{{ lesson.summary }}</p></div>{% endif %}
+{% endblock %}

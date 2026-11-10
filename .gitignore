@@ -1,0 +1,16 @@
+.env
+config/local/*
+!config/local/.gitkeep
+data/
+*.db
+*.db-wal
+*.db-shm
+backups/
+shots/
+__pycache__/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+*.egg-info/
+ibkr.env

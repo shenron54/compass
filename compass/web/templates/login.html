@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Sign in · compass{% endblock %}
+{% block content %}
+<div class="card login">
+  <h1>compass</h1>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="post" action="/login" autocomplete="on">
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username" required autofocus>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <label for="code">Authenticator code</label>
+    <input id="code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,7}" required>
+    <p><button class="primary" type="submit">Sign in</button></p>
+  </form>
+</div>
+{% endblock %}

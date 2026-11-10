@@ -1,0 +1,54 @@
+[project]
+name = "compass"
+version = "0.1.0"
+description = "Personal portfolio monitor and market-cycle learning tool for an IBKR account"
+requires-python = ">=3.12"
+dependencies = [
+  "apscheduler>=3.10,<4",
+  "argon2-cffi>=23.1",
+  "fastapi>=0.115",
+  "httpx>=0.27",
+  "ib_async>=1.0",
+  "itsdangerous>=2.2",
+  "jinja2>=3.1",
+  "markdown>=3.6",
+  "pydantic>=2.7",
+  "pyotp>=2.9",
+  "python-multipart>=0.0.12",
+  "pyyaml>=6",
+  "qrcode>=7.4",
+  "selectolax>=1.0",
+  "tzdata>=2024.1",
+  "uvicorn>=0.30",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "respx>=0.21", "ruff>=0.6", "playwright>=1.48"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+extend-select = ["B", "I", "UP"]
+# FastAPI's Depends()/Form() in argument defaults is the framework's documented pattern.
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["compass*"]
+
+[tool.setuptools.package-data]
+compass = [
+  "defaults/*.yaml",
+  "coach/curriculum/*.md",
+  "web/templates/*.html",
+  "web/static/*",
+  "web/static/vendor/*",
+]

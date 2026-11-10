@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tone, alerts_block %}
+{% block title %}Rules · compass{% endblock %}
+{% block content %}
+<div class="row" style="justify-content: space-between"><h1>Rules</h1><a class="btn primary" href="/rules/new">New rule</a></div>
+<p class="muted small">Rules are written in advance and checked after every data refresh. When one fires it shows here and on the dashboard with what the rule says to do. compass never places an order.</p>
+{{ alerts_block(alerts) }}
+{% for rule, text, ev in items %}
+<div class="card" id="{{ rule.id }}">
+  <div class="row" style="justify-content: space-between">
+    <h2>{{ rule.name }} <span class="small muted">· {{ rule.type.replace("_", " ") }}</span></h2>
+    {% if not rule.enabled %}{{ tone("caution", "Disabled") }}{% elif ev.error %}{{ tone("caution", "Cannot evaluate") }}{% elif ev.fired %}{{ tone("stress", "Firing") }}{% else %}{{ tone("calm", "Quiet") }}{% endif %}
+  </div>
+  {% if rule.enabled %}
+  <p><b>{{ ev.headline }}.</b> {{ ev.explanation }}</p>
+  {% if ev.suggestions %}<ul class="small">{% for s in ev.suggestions %}<li>{{ s }}</li>{% endfor %}</ul>{% endif %}
+  {% else %}<p class="muted small">Not evaluated while disabled.</p>{% endif %}
+  {% if rule.note %}<p class="small muted">Note: {{ rule.note }}</p>{% endif %}
+  <div class="row small">
+    <a href="/rules/{{ rule.id }}/history">History replay</a>
+    <a href="/rules/{{ rule.id }}/edit">Edit</a>
+    <form method="post" action="/rules/{{ rule.id }}/toggle"><button class="link">{{ "Disable" if rule.enabled else "Enable" }}</button></form>
+    <form method="post" action="/rules/{{ rule.id }}/delete"><button class="link" data-confirm="Delete rule {{ rule.id }}?">Delete</button></form>
+  </div>
+</div>
+{% else %}
+<div class="card"><p class="muted">No rules yet. <a href="/rules/new">Write the first one.</a></p></div>
+{% endfor %}
+{% endblock %}

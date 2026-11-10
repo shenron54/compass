@@ -1,0 +1,31 @@
+# Copy to config/local/portfolio.yaml (gitignored) and edit. Never commit the real file:
+# this repository is public.
+
+base_currency: HKD
+account: ""            # IBKR account id; leave empty when the login has one account
+
+# Target weights as fractions of NAV. CASH is the uninvested cash share. They should sum to 1.
+targets:
+  EQQQ: 0.40
+  VUAA: 0.20
+  SWRD: 0.15
+  MSFT: 0.08
+  NVDA: 0.07
+  CASH: 0.10
+
+# How far a weight may drift from its target before the portfolio page marks it.
+bands:
+  default: 0.05
+  CASH: 0.05
+
+# Which GICS sectors count as "tech" for the look-through exposure figure.
+tech_sectors: [Information Technology, Communication Services]
+
+# Price history used for charts and rules when IBKR historical bars are unavailable.
+price_series:
+  EQQQ: FRED:NASDAQ100
+  VUAA: FRED:SP500
+  SWRD: FRED:SP500
+
+# Optional overrides when the IBKR symbol differs from the look-through key.
+aliases: {}

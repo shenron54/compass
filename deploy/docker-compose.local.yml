@@ -1,0 +1,13 @@
+# Local run without Caddy: http://127.0.0.1:8000. To try the gateway, add --profile ibkr, an
+# ibkr.env with a paper login plus TRADING_MODE=paper, and IB_PORT=4004 in .env.
+services:
+  ib-gateway:
+    extends: {file: docker-compose.yml, service: ib-gateway}
+  web:
+    extends: {file: docker-compose.yml, service: web}
+    environment: {COOKIE_SECURE: "false"}
+    ports: ["127.0.0.1:${COMPASS_PORT:-8000}:8000"]
+  worker:
+    extends: {file: docker-compose.yml, service: worker}
+networks: {edge: {}, gateway: {}}
+volumes: {compass-data: {}}

@@ -1,0 +1,53 @@
+# Droplet stack. Only Caddy publishes ports. The gateway shares a network with the worker only:
+# the internet-facing web container cannot reach it. IBKR credentials live in ibkr.env, which
+# only the gateway container reads.
+services:
+  ib-gateway:
+    image: ghcr.io/gnzsnz/ib-gateway:stable
+    env_file: ../ibkr.env
+    environment:
+      READ_ONLY_API: "yes"
+      TWOFA_TIMEOUT_ACTION: restart
+      RELOGIN_AFTER_TWOFA_TIMEOUT: "yes"
+      AUTO_RESTART_TIME: "06:15 AM"
+      EXISTING_SESSION_DETECTED_ACTION: primary
+      TIME_ZONE: Asia/Hong_Kong
+      TZ: Asia/Hong_Kong
+      JAVA_HEAP_SIZE: "768"
+    networks: [gateway]
+    mem_limit: 1100m
+    oom_score_adj: -500
+    restart: unless-stopped
+    profiles: [ibkr]
+
+  web:
+    build: {context: .., dockerfile: deploy/Dockerfile}
+    command: uvicorn compass.web.app:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*
+    env_file: ../.env
+    volumes: [compass-data:/data, ../config/local:/app/config/local:ro]
+    networks: [edge]
+    mem_limit: 300m
+    restart: unless-stopped
+
+  worker:
+    build: {context: .., dockerfile: deploy/Dockerfile}
+    command: python -m compass.worker
+    env_file: ../.env
+    volumes: [compass-data:/data, ../config/local:/app/config/local:ro]
+    networks: [gateway]
+    mem_limit: 350m
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    ports: ["80:80", "443:443"]
+    volumes: [./Caddyfile:/etc/caddy/Caddyfile:ro, caddy-data:/data]
+    environment: [COMPASS_HOST]
+    networks: [edge]
+    mem_limit: 120m
+    restart: unless-stopped
+
+networks:
+  edge: {}
+  gateway: {}
+volumes: {compass-data: {}, caddy-data: {}}

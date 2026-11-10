@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chart, tone, explain_button %}
+{% block title %}{{ rule.name }} history · compass{% endblock %}
+{% block content %}
+<p class="small"><a href="/rules">← Rules</a></p>
+<h1>{{ rule.name }}</h1>
+<div class="card">
+  <div class="row" style="justify-content: space-between"><h2>Today</h2>{% if ev.error %}{{ tone("caution", "Cannot evaluate") }}{% elif ev.fired %}{{ tone("stress", "Firing") }}{% else %}{{ tone("calm", "Quiet") }}{% endif %}</div>
+  <p><b>{{ ev.headline }}.</b> {{ ev.explanation }}</p>
+  {% if ev.suggestions %}<ul class="small">{% for s in ev.suggestions %}<li>{{ s }}</li>{% endfor %}</ul>{% endif %}
+  {{ explain_button("/coach/explain/rule/" ~ rule.id, "explain-rule") }}
+</div>
+<div class="card">
+  <h2>Replay: {{ rp.series }}</h2>
+  {{ chart("replay", chart_json, "chart tall") }}
+  <ul>{% for s in rp.summary %}<li>{{ s }}</li>{% endfor %}</ul>
+  {% for c in rp.caveats %}<p class="small muted">{{ c }}</p>{% endfor %}
+</div>
+{% if rp.rows %}
+<div class="card"><h2>Every time it fired</h2>
+  <div class="scroll"><table>
+    <tr>{% for c in rp.columns %}<th>{{ c }}</th>{% endfor %}</tr>
+    {% for row in rp.rows|reverse %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>{% endfor %}
+  </table></div>
+</div>
+{% endif %}
+<div class="grid g2">
+  <div class="card"><h2>Rule</h2><pre class="yaml">{{ text }}</pre><a class="small" href="/rules/{{ rule.id }}/edit">Edit</a></div>
+  <div class="card"><h2>State changes recorded</h2>
+    {% if events %}<table class="small">{% for e in events %}<tr><td>{{ e.ts[:16].replace("T", " ") }}</td><td>{{ "fired" if e.fired else "quiet" }}</td><td>{{ e.explanation }}</td></tr>{% endfor %}</table>
+    {% else %}<p class="muted small">Nothing recorded yet; the worker records a line each time the rule changes state.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

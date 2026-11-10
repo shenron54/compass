@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Journal · compass{% endblock %}
+{% block content %}
+<h1>Decision journal</h1>
+<p class="muted small">Write the reason before acting. The coach reviews each entry after 30, 90 and 365 days and judges the reasoning separately from the result. Prices of the named symbols and the two indexes are recorded with the entry.</p>
+<div class="grid g2">
+  <form class="card" method="post" action="/journal">
+    <h2>New entry</h2>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <label for="title">Title</label><input id="title" name="title" value="{{ form.title or '' }}" required maxlength="200">
+    <div class="form-grid">
+      <div><label for="action">Action</label><select id="action" name="action">{% for a in actions %}<option {{ "selected" if form.action == a }}>{{ a }}</option>{% endfor %}</select></div>
+      <div><label for="symbols">Symbols (comma separated)</label><input id="symbols" name="symbols" value="{{ form.symbols or '' }}" placeholder="EQQQ, AMD"></div>
+      <div><label for="rule_id">Related rule</label><select id="rule_id" name="rule_id"><option value="">none</option>{% for r in rule_ids %}<option {{ "selected" if form.rule_id == r }}>{{ r }}</option>{% endfor %}</select></div>
+    </div>
+    <label for="thesis">Thesis: why?</label><textarea id="thesis" name="thesis" rows="4" required>{{ form.thesis or '' }}</textarea>
+    <label for="trigger">Trigger: what made you act now?</label><textarea id="trigger" name="trigger" rows="2">{{ form.trigger or '' }}</textarea>
+    <label for="expected">What do you expect, and what would prove you wrong?</label><textarea id="expected" name="expected" rows="2">{{ form.expected or '' }}</textarea>
+    <p><button class="primary">Save entry</button></p>
+  </form>
+  <div class="card">
+    <h2>Entries</h2>
+    {% if entries %}<table class="small">
+      {% for e in entries %}<tr><td>{{ e.created_at[:10] }}</td><td><a href="/journal/{{ e.id }}">{{ e.title }}</a><div class="muted">{{ e.action }}{% if e.symbols %} · {{ e.symbols }}{% endif %}</div></td><td class="num">{{ e.reviews|length }} reviews</td></tr>{% endfor %}
+    </table>{% else %}<p class="muted small">Nothing yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
